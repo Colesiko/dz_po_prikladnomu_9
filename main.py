@@ -1,28 +1,67 @@
+import logging
 import random
 
-# Загадываем случайное число от 1 до N
-N = 100
-target = random.randint(1, N)
+# Настраиваем логгер
+logging.basicConfig(filename='game.log', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
-# У пользователя k попыток
-k = 10
+def log_event(event):
+    logging.info(event)
 
-# Цикл с k итерациями
-for i in range(k):
-    # Спрашиваем у пользователя число
-    guess = int(input("Введите число от 1 до {}: ".format(N)))
+def game():
+    # Запрашиваем у пользователя ввести N и k
+    n = input("Введите максимальное число N: ")
+    bukv = n.isdigit()
+    if bukv == False:  # проверка на буквы
+        while bukv == False:
+            n = input("Введите число большее 1(цифрами): ")
+            bukv = str.isnumeric(n)
+    n = int(n)
+    while n == 0:
+        n = input("Введите число большее 1(цифрами): ")
+        bukv = n.isdigit()
+        if bukv == False:  # проверка на буквы
+            while bukv == False:
+                n = input("Введите число большее 1(цифрами): ")
+                bukv = str.isnumeric(n)
+        n = int(n)
 
-    # Сравниваем с загаданным числом
-    if guess == target:
-        # Если угадали, выходим из цикла
-        print("Вы угадали!")
-        break
-    elif guess < target:
-        print("Загаданное число больше")
-    else:
-        print("Загаданное число меньше")
+    k = input("Введите количество попыток k: ")
+    bukv = k.isdigit()
+    if bukv == False:  # проверка на буквы
+        while bukv == False:
+            k = input("Введите число большее 1(цифрами): ")
+            bukv = str.isnumeric(k)
+    k = int(k)
 
-# Если цикл закончился, значит попытки закончились
-if guess != target:
-    print("Попытки закончились. Загаданное число было", target)
+    # Записываем событие в лог-файл
+    log_event(f"start game. N={n}, k={k}")
 
+    # Генерируем случайное число от 1 до N
+    number = random.randint(1, n)
+    log_event(f"zagadannoe chislo {number}")
+
+    # Предлагаем пользователю отгадать число
+    for i in range(k):
+        guess = input("Ваш ответ: ")
+        bukv = guess.isdigit()
+        if bukv == False:  # проверка на буквы
+            while bukv == False:
+                guess = input("Введите число большее 1(цифрами): ")
+                bukv = str.isnumeric(guess)
+        guess = int(guess)
+
+        log_event(f"popitka {i+1}: {guess}")
+        if guess == number:
+            print("Вы угадали!")
+            log_event("ugadannoe chislo!")
+            return
+        elif guess < number:
+            print("Загаданное число больше")
+        else:
+            print("Загаданное число меньше")
+
+    print("Попытки закончились")
+    log_event("popitki zakonchilis")
+
+# Запускаем игру
+game()
